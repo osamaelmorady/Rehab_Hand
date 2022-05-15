@@ -1,0 +1,1547 @@
+
+
+/***************************************************************************************************************/
+uint32_t DELAY_COUNTER = 0 ;
+#define DELAY_MS(REQ_DELAY) 	for(DELAY_COUNTER = 0 ; DELAY_COUNTER<(REQ_DELAY*1000UL) ; DELAY_COUNTER++ )	\
+									{asm("NOP") ; }
+/***************************************************************************************************************/
+
+
+
+// DW Heater Timer Test
+#if 0
+
+
+uint8_t flag_tog = 0 ;
+
+void Toggle(void)
+{
+
+	if (flag_tog == 0)
+	{
+		GPIO_WriteDataBit(PORT7, PIN4, PIN_VALUE_LOW) ;
+		GPIO_WriteDataBit(PORT7, PIN3, PIN_VALUE_LOW) ;
+
+		flag_tog = 1 ;
+	}
+	else
+	{
+		GPIO_WriteDataBit(PORT7, PIN4, PIN_VALUE_HIGH) ;
+		GPIO_WriteDataBit(PORT7, PIN3, PIN_VALUE_HIGH) ;
+
+		flag_tog = 0 ;
+	}
+}
+
+
+
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+
+	 EI() ;
+
+	 GPIO_SetPinOutput(PORT7, PIN4) ;
+	 GPIO_SetPinOutput(PORT7, PIN3) ;
+	 GPIO_WriteDataBit(PORT7, PIN4, PIN_VALUE_LOW) ;
+	 GPIO_WriteDataBit(PORT7, PIN3, PIN_VALUE_LOW) ;
+
+	 DELAY_MS(500) ;
+
+	  TRG_vTimerInit() ;
+
+	  TRG_vIntSetControl(TRG_INT_ENABLE) ;
+
+	  TRG_vSetCallBack(&Toggle)  ;
+	  
+	  TRG_vSetRunState(TRG_RUN_START)  ;
+
+
+	 while(1) {
+	// TODO: add application code here
+
+
+	 }
+return 0;
+
+}
+
+
+#endif
+
+
+
+
+// TRG INT Timer
+
+#if	0
+
+uint8_t flag_tog = 0 ;
+
+
+void Toggle(void)
+{
+
+	if (flag_tog == 0)
+	{
+		GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_LOW) ;
+		GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_LOW) ;
+
+		flag_tog = 1 ;
+	}
+	else
+	{
+		GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_HIGH) ;
+		GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_HIGH) ;
+
+		flag_tog = 0 ;
+	}
+
+}
+
+
+
+int main(void) {
+
+	SYS_Clock_Init() ;
+
+	 GPIO_SetPinOutput(PORT6, PIN2) ;
+	 GPIO_SetPinOutput(PORT6, PIN3) ;
+	 GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_LOW) ;
+	 GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_LOW) ;
+
+	 DELAY_MS(500) ;
+
+	  TRG_vTimerInit() ;
+
+	  TRG_vSetCallBack(&Toggle) ;
+
+	  TRG_vIntSetControl(TRG_INT_ENABLE) ;
+
+	  TRG_vSetRunState(TRG_RUN_START)  ;
+
+
+	 while(1) {
+	// TODO: add application code here
+
+
+	 }
+return 0;
+
+}
+
+
+
+
+#endif
+
+
+
+
+
+
+
+// GPIO test
+#if 0
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+
+	 TRG_vTimerInit() ;
+
+	 GPIO_SetPinOutput(PORT6, PIN2) ;
+	 GPIO_SetPinOutput(PORT6, PIN3) ;
+	 GPIO_SetPinOutput(PORT5, PIN0) ;
+
+
+    while(1) {
+	// TODO: add application code here
+
+    	GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_HIGH) ;
+    	GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_LOW) ;
+    	GPIO_WriteDataBit(PORT5, PIN0, PIN_VALUE_LOW) ;
+
+    	DELAY_MS(1000) ;
+    	//TRG_vTimDelay_MS(1000) ;
+
+    	GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_LOW) ;
+    	GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_HIGH) ;
+    	GPIO_WriteDataBit(PORT5, PIN0, PIN_VALUE_HIGH) ;
+
+    	DELAY_MS(1000) ;
+    	//TRG_vTimDelay_MS(1000) ;
+
+    }
+return 0;
+
+}
+
+#endif
+
+
+
+// GPIO Input test
+#if 0
+
+uint8_t Port_count = PORT0 ;
+uint8_t Pin_count = PIN0 ;
+
+
+
+uint8_t BIT_Reading = 0 ;
+int main(void) {
+
+	 SYS_Clock_Init() ;
+
+	 TRG_vTimerInit() ;
+
+
+	 for (Port_count = PORT0 ; Port_count <= PORT14 ; Port_count ++ )
+	 {
+		 for (Pin_count = PIN0 ; Pin_count <= PIN7 ; Pin_count ++ )
+		 {
+			 if(!((Port_count == PORT6) && (Pin_count == PIN2)))
+			 {
+			 GPIO_SetPinInput(Port_count, Pin_count) ;
+			 //GPIO_vSetPullUpResistor(Port_count, Pin_count,GPIO_STATUS_ENABLE) ;
+			 }
+		 }
+
+	 }
+
+
+
+	 GPIO_SetPinOutput(PORT6, PIN2) ;
+
+
+    while(1) {
+	// TODO: add application code here
+
+
+
+   	 for (Port_count = PORT0 ; Port_count <= PORT14 ; Port_count ++ )
+   	 {
+   		 for (Pin_count = PIN0 ; Pin_count <= PIN7 ; Pin_count ++ )
+   		 {
+   			 if(!(Port_count == PORT6) && (Pin_count == PIN2))
+   			 {
+   				GPIO_ReadDataBit(Port_count, Pin_count, &BIT_Reading)  ;
+   			 }
+   		 }
+
+   	 }
+
+
+
+    	if (BIT_Reading)
+    	{
+    		GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_LOW) ;
+
+    	}
+    	else
+    	{
+    		GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_HIGH) ;
+    	}
+
+
+    }
+return 0;
+
+}
+
+#endif
+
+
+
+// EXTI test
+#if 0
+
+
+uint8_t BIT_Reading = 0 ;
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+
+	 TRG_vTimerInit() ;
+
+	 GPIO_SetPinInput(PORT1, PIN0) ;
+	 GPIO_vSetPullUpResistor(PORT1, PIN0,GPIO_STATUS_ENABLE) ;
+
+	 GPIO_SetPinOutput(PORT7, PIN4) ;
+
+
+    while(1) {
+	// TODO: add application code here
+
+    	GPIO_ReadDataBit(PORT1, PIN0, &BIT_Reading)  ;
+
+    	if (BIT_Reading)
+    	{
+    		GPIO_WriteDataBit(PORT7, PIN4, PIN_VALUE_HIGH) ;
+
+    	}
+    	else
+    	{
+    		GPIO_WriteDataBit(PORT7, PIN4, PIN_VALUE_LOW) ;
+    	}
+
+
+    }
+return 0;
+
+}
+
+#endif
+
+
+
+
+
+// Watchdog timer Test
+#if 0
+
+int main(void) {
+
+	SYS_Clock_Init() ;
+
+	GPIO_SetPinOutput(PORT6, PIN3) ;
+
+	GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_LOW) ;
+	DELAY_MS(500) ;
+
+
+	while(1)
+	{
+		GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_LOW) ;
+		DELAY_MS(100) ;
+
+
+		GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_HIGH) ;
+		DELAY_MS(100) ;
+	}
+
+
+}
+
+
+#endif
+
+
+
+
+// TRG	--> PWM
+#if 0
+
+uint8_t		dim = 0 ;
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+
+	 CLK_Periph_Control ( PERI_TRG , PERIPH_ENABLE) ;
+
+	TRG_vPWMInit() ;
+	TRG_vPWMSetFrequency(10000) ;
+	TRG_vPWMSetDutyCycle(0) ;
+	TRG_vPWMStart() ;
+
+    while(1) {
+	// TODO: add application code here
+
+    	for (dim = 0 ; dim <= 100 ; dim+=10)
+    	{
+    	TRG_vPWMSetDutyCycle(dim) ;
+
+    	DELAY_MS(500) ;
+    	}
+
+    	//GPIO_WriteDataBit(PORT4, PIN3, PIN_VALUE_HIGH) ;
+    	//DELAY_MS(200) ;
+
+    	//GPIO_WriteDataBit(PORT4, PIN3, PIN_VALUE_LOW) ;
+    	//DELAY_MS(200) ;
+
+    }
+return 0;
+
+}
+
+#endif
+
+
+
+
+
+// ADC Test
+#if 0
+
+
+volatile uint16_t Reading ;
+
+int main(void) {
+
+	SYS_Clock_Init() ;
+
+	GPIO_SetPinOutput(PORT6, PIN2) ;
+	GPIO_SetPinOutput(PORT6, PIN3) ;
+
+
+	ADC_vInit(ADC_AIN23)	;
+
+	ADC_vChannelSelect(ADC_AIN23) ;
+
+	ADC_vStatusControl(ADC_ON);
+
+
+	while(1)
+	{
+
+		ADC_vStartConversion() ;
+
+		Reading=ADC_u16GetResult() ;
+
+		DELAY_MS(1)  ;
+
+
+		if (Reading < 100)
+		{
+			GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_HIGH) ;
+			GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_HIGH) ;
+		}
+		else if (Reading < 200)
+		{
+			GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_HIGH) ;
+			GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_LOW) ;
+		}
+		else if (Reading < 255)
+		{
+			GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_LOW) ;
+			GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_LOW) ;
+		}
+
+
+
+		ADC_vStopConversion() ;
+	}
+
+}
+
+#endif
+
+
+
+
+// TRD0 PWM B0 test
+#if 0
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+
+	 GPIO_SetPinOutput(PORT6, PIN3) ;
+
+	 GPIO_SetPinOutput(PORT1, PIN5) ;
+	 GPIO_WriteDataBit(PORT1, PIN5, PIN_VALUE_HIGH)  ;
+	 DELAY_MS(300)  ;
+	 GPIO_WriteDataBit(PORT1, PIN5, PIN_VALUE_LOW)  ;
+	 DELAY_MS(1000)  ;
+
+	  R_TMRD0_Create();
+	  R_TMRD0_Start();
+
+
+    while(1) {
+	// TODO: add application code here
+
+    	GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_HIGH)  ;
+    	DELAY_MS(200) ;
+
+    	GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_LOW)  ;
+    	DELAY_MS(200) ;
+
+    }
+return 0;
+
+}
+
+#endif
+
+
+
+// PCLBUZ test
+#if 0
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+
+	 GPIO_SetPinOutput(PORT6, PIN3) ;
+
+	 PCLBUZ_vInit(PCLBUZ_CH0,PCLBUZ_CLK_Fmain_BY_4) ;
+	 PCLBUZ_vStart(PCLBUZ_CH0) ;
+
+	 PCLBUZ_vInit(PCLBUZ_CH1,PCLBUZ_CLK_Fmain_BY_4) ;
+	 PCLBUZ_vStart(PCLBUZ_CH1) ;
+
+
+    while(1) {
+	// TODO: add application code here
+
+    	GPIO_WriteDataBit(PORT6, PORT3, PIN_VALUE_HIGH)  ;
+
+    	DELAY_MS(500) ;
+
+    	GPIO_WriteDataBit(PORT6, PORT3, PIN_VALUE_LOW)  ;
+
+    	DELAY_MS(500) ;
+
+    }
+return 0;
+
+}
+
+#endif
+
+
+
+
+
+#if 1
+
+#include "TRG_GEN/TRG_GEN.h"
+
+
+uint8_t flag_tog = 0 ;
+void Toggle(void) ;
+
+
+
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+
+	 EI() ;
+
+	 GPIO_SetPinOutput(PORT6, PIN2) ;
+	 GPIO_SetPinOutput(PORT6, PIN3) ;
+	 GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_LOW) ;
+	 GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_LOW) ;
+
+	 DELAY_MS(500) ;
+
+	  TRG_vTimerInit() ;
+
+	  TRG_Int_Set(TRG_INT_ENABLE) ;
+
+	  TRG_vPeriodicInterval(30000, &Toggle) ;
+
+	  TRG_SetRunState(TRG_START)  ;
+
+
+	 while(1) {
+	// TODO: add application code here
+
+
+	 }
+return 0;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+void Toggle(void)
+{
+
+	if (flag_tog == 0)
+	{
+		GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_LOW) ;
+		GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_LOW) ;
+
+		flag_tog = 1 ;
+	}
+	else
+	{
+		GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_HIGH) ;
+		GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_HIGH) ;
+
+		flag_tog = 0 ;
+	}
+}
+
+
+
+
+
+#endif
+
+
+
+// 7 SEG Test
+#if 0
+
+#define  Q1_PORT 	PORT7
+#define  Q1_PIN  	PIN0
+
+#define  Q2_PORT 	PORT7
+#define  Q2_PIN  	PIN2
+
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+	 TRG_vTimerInit() ;
+	 _7SEG_EnuInit() ;
+
+	 GPIO_SetPinOutput(Q1_PORT, Q1_PIN) ;
+	 GPIO_SetPinOutput(Q2_PORT, Q2_PIN) ;
+	 GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_LOW) ;
+	 GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_LOW) ;
+
+	 _7SEG_EnuInit() ;
+
+
+    while(1) {
+	// TODO: add application code here
+
+    	uint8_t _7Seg_Count = 0 ;
+
+
+
+    	for(_7Seg_Count = 0 ; _7Seg_Count <10 ; _7Seg_Count ++)
+    	{
+    		_7SEG_EnuShowNumber('0'+_7Seg_Count) ;
+
+        	TRG_vTimDelay_MS(500) ;
+
+    	}
+
+    	for(_7Seg_Count = 0 ; _7Seg_Count <8 ; _7Seg_Count ++)
+    	  {
+    	   	_7SEG_EnuShowNumber('A'+_7Seg_Count) ;
+
+    	       TRG_vTimDelay_MS(500) ;
+
+    	 }
+
+
+	_7SEG_EnuShowNumber('\0') ;
+   	TRG_vTimDelay_MS(2000) ;
+
+    }
+return 0;
+
+}
+#endif
+
+
+
+
+
+// Pins Test
+#if 0
+
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+	 TRG_vTimerInit() ;
+
+	 uint8_t Port_count = 0 ;  uint8_t Pin_count = 0 ;
+
+	 for (Port_count=0 ; Port_count <14 ; Port_count ++ )
+	 {
+		 for (Pin_count=0 ; Pin_count <8 ; Pin_count ++ )
+		 {
+
+			 GPIO_SetPinOutput(PORT0+Port_count, PIN0 + Pin_count) ;
+		 }
+	 }
+
+
+
+	 for (Port_count=0 ; Port_count <14 ; Port_count ++ )
+   	 {
+   		 for (Pin_count=0 ; Pin_count <8 ; Pin_count ++ )
+   		 {
+   			 GPIO_WriteDataBit(PORT0+Port_count, PIN0 + Pin_count, PIN_VALUE_HIGH)  ;
+
+
+
+   		 }
+   	 }
+
+
+
+    while(1) {
+	// TODO: add application code here
+
+
+
+    }
+return 0;
+
+}
+#endif
+
+
+
+
+
+
+// Digital Heater
+#if 0
+
+#define  Q1_PORT 	PORT1
+#define  Q1_PIN  	PIN3
+
+#define  Q2_PORT 	PORT1
+#define  Q2_PIN  	PIN2
+
+#define  STB_LED_PORT 	PORT7
+#define  STB_LED_PIN  	PIN4
+
+#define  HEATER_LED_PORT 	PORT7
+#define  HEATER_LED_PIN  	PIN3
+
+#define  ADC1_CH 	ADC_AIN18
+#define  ADC2_CH 	ADC_AIN23
+
+
+#define SW0_PORT	PORT1
+#define SW0_PIN		PIN0
+
+#define SW1_PORT	PORT1
+#define SW1_PIN		PIN1
+
+#define SW2_PORT	PORT1
+#define SW2_PIN		PIN6
+
+#define TICK_TIME_MS	5
+#define PERIODICITY		100
+
+uint16_t	reading=0 ;
+
+uint8_t	period=PERIODICITY ;
+
+ uint8_t SW0_reading = 0 ;
+ uint8_t SW1_reading = 0 ;
+ uint8_t SW2_reading = 0 ;
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+
+	 TMRD0_vInit() ;		/* Buzzer */
+
+	 TRG_vTimerInit() ;		/* OS */
+
+	 ADC_vInit(ADC1_CH) ;		/* Sensor 1 */
+	 ADC_vInit(ADC2_CH) ;		/* Sensor 2 */
+	 ADC_vStatusControl(ADC_ON)  ;
+
+	 _7SEG_EnuInit() ;			/* SS_D */
+
+
+	 /* Q1 , Q2 Transistor */
+	 GPIO_SetPinOutput(Q1_PORT, Q1_PIN) ;
+ 	 GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_HIGH) ;
+ 	 GPIO_SetPinOutput(Q2_PORT, Q2_PIN) ;
+ 	 GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_HIGH) ;
+
+
+ 	GPIO_SetPinOutput(STB_LED_PORT, STB_LED_PIN) ;
+ 	GPIO_WriteDataBit(STB_LED_PORT, STB_LED_PIN, PIN_VALUE_HIGH) ;
+
+ 	GPIO_SetPinOutput(HEATER_LED_PORT, HEATER_LED_PIN) ;
+ 	GPIO_WriteDataBit(HEATER_LED_PORT, HEATER_LED_PIN, PIN_VALUE_HIGH) ;
+
+ 	GPIO_SetPinInput(SW0_PORT, SW0_PIN) ;
+ 	//GPIO_vSetPullUpResistor(SW0_PORT, SW0_PIN, GPIO_STATUS_ENABLE)  ;
+ 	GPIO_SetPinInput(SW1_PORT, SW1_PIN) ;
+ 	//GPIO_vSetPullUpResistor(SW1_PORT, SW1_PIN, GPIO_STATUS_ENABLE)  ;
+ 	GPIO_SetPinInput(SW2_PORT, SW2_PIN) ;
+ 	//GPIO_vSetPullUpResistor(SW2_PORT, SW2_PIN, GPIO_STATUS_ENABLE)  ;
+
+ 	GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_LOW) ;
+ 	GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_LOW) ;
+
+ 	_7SEG_EnuShowNumber('0') ;
+
+ 	TRG_vTimDelay_MS(1000)  ;
+
+
+
+    while(1) {
+	// TODO: add application code here
+
+    /*****************************/
+    	/*  CH 1 */
+    	ADC_vChannelSelect(ADC1_CH) ;
+    	ADC_vStartConversion() ;
+
+    	reading = (ADC_u16GetResult() * 99 ) /255 ;
+
+    	GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_HIGH) ;
+    	GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_HIGH) ;
+
+    	GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_HIGH) ;
+    	GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_LOW) ;
+
+    	_7SEG_EnuShowNumber((reading/10+'0')) ;
+
+    	GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_HIGH) ;
+    	GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_LOW) ;
+
+    	 _7SEG_EnuShowNumber((reading%10+'0')) ;
+
+    	ADC_vStopConversion() ;
+
+
+    /*****************************/
+
+
+   	/*****************************/
+    	TRG_vTimDelay_MS(TICK_TIME_MS) ;
+   	/*****************************/
+
+
+   	/*****************************/
+    	// CH 2
+    	ADC_vChannelSelect(ADC2_CH) ;
+
+    	ADC_vStartConversion() ;
+
+    	reading = (ADC_u16GetResult() * 99 ) /255 ;
+
+    	GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_HIGH) ;
+    	GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_HIGH) ;
+
+    	GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_LOW) ;
+
+    	_7SEG_EnuShowNumber((reading+'0')) ;
+
+    	ADC_vStopConversion() ;
+
+
+   	/*****************************/
+
+
+   	/*****************************/
+     TRG_vTimDelay_MS(TICK_TIME_MS) ;
+   	/*****************************/
+
+
+
+
+     if (period==0)
+     {
+
+    	 TMRD0_vStart() ;
+
+    	 TRG_vTimDelay_MS(TICK_TIME_MS*10) ;
+
+    	 period = PERIODICITY ;
+
+    	 TMRD0_vStop() ;
+     }
+     else
+     {
+    	 period-- ;
+
+     }
+
+
+
+
+
+     GPIO_ReadDataBit(SW0_PORT, SW0_PORT, &SW0_reading)  ;
+     GPIO_ReadDataBit(SW1_PORT, SW1_PORT, &SW1_reading)  ;
+     GPIO_ReadDataBit(SW2_PORT, SW2_PORT, &SW2_reading)  ;
+
+
+     if (!SW0_reading)
+     {
+    	 GPIO_WriteDataBit(STB_LED_PORT, STB_LED_PIN, PIN_VALUE_HIGH) ;
+    	 GPIO_WriteDataBit(HEATER_LED_PORT, HEATER_LED_PIN, PIN_VALUE_LOW) ;
+
+     }
+     else if (!SW1_reading)
+     {
+    	 GPIO_WriteDataBit(STB_LED_PORT, STB_LED_PIN, PIN_VALUE_LOW) ;
+    	 GPIO_WriteDataBit(HEATER_LED_PORT, HEATER_LED_PIN, PIN_VALUE_HIGH) ;
+     }
+     else if (!SW2_reading)
+     {
+    	 GPIO_WriteDataBit(STB_LED_PORT, STB_LED_PIN, PIN_VALUE_LOW) ;
+    	 GPIO_WriteDataBit(HEATER_LED_PORT, HEATER_LED_PIN, PIN_VALUE_LOW) ;
+
+     }
+
+
+
+    }
+return 0;
+
+}
+#endif
+
+
+
+
+
+// Enamel Heater
+#if 0
+
+#define  Q1_PORT 	PORT7
+#define  Q1_PIN  	PIN4
+
+#define  Q2_PORT 	PORT7
+#define  Q2_PIN  	PIN3
+
+#define  Q3_PORT 	PORT7
+#define  Q3_PIN  	PIN2
+
+
+#define  ADC1_CH 	ADC_AIN24
+
+
+
+uint16_t	reading=0 ;
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+
+	 TMRD0_vInit() ;		/* Buzzer */
+
+	 TRG_vTimerInit() ;		/* OS */
+
+	 ADC_vInit(ADC1_CH) ;		/* Sensor 1 */
+	 ADC_vStatusControl(ADC_ON)  ;
+
+	 _7SEG_EnuInit() ;			/* SS_D */
+
+
+	 /* Q1 , Q2 Transistor */
+	 GPIO_SetPinOutput(Q1_PORT, Q1_PIN) ;
+ 	 GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_HIGH) ;
+ 	 GPIO_SetPinOutput(Q2_PORT, Q2_PIN) ;
+ 	 GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_HIGH) ;
+ 	 GPIO_SetPinOutput(Q2_PORT, Q3_PIN) ;
+ 	 GPIO_WriteDataBit(Q2_PORT, Q3_PIN, PIN_VALUE_HIGH) ;
+
+
+ 	GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_LOW) ;
+ 	GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_LOW) ;
+ 	GPIO_WriteDataBit(Q2_PORT, Q3_PIN, PIN_VALUE_LOW) ;
+
+ 	_7SEG_EnuShowNumber('8') ;
+
+ 	TRG_vTimDelay_MS(1000)  ;
+
+
+
+    while(1) {
+	// TODO: add application code here
+
+    /*****************************/
+    	/*  CH 1 */
+    	ADC_vChannelSelect(ADC1_CH) ;
+    	ADC_vStartConversion() ;
+
+    	reading = (ADC_u16GetResult() * 9 ) /255 ;
+
+    	reading= 9 - reading  ;
+
+    	ADC_vStopConversion() ;
+
+
+
+    	/*****************************/
+    	GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_HIGH) ;
+    	GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_HIGH) ;
+    	GPIO_WriteDataBit(Q2_PORT, Q3_PIN, PIN_VALUE_HIGH) ;
+
+    	GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_LOW) ;
+    	/*****************************/
+
+
+    	_7SEG_EnuShowNumber((reading+'0')) ;
+
+    	TRG_vTimDelay_MS(500) ;
+
+    	/*****************************/
+    	GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_HIGH) ;
+    	GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_HIGH) ;
+    	GPIO_WriteDataBit(Q2_PORT, Q3_PIN, PIN_VALUE_HIGH) ;
+
+    	GPIO_WriteDataBit(Q1_PORT, Q2_PIN, PIN_VALUE_LOW) ;
+    	/*****************************/
+
+    	_7SEG_EnuShowNumber((reading+'0')) ;
+
+    	TRG_vTimDelay_MS(500) ;
+
+
+    	/*****************************/
+    	GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_HIGH) ;
+    	GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_HIGH) ;
+    	GPIO_WriteDataBit(Q2_PORT, Q3_PIN, PIN_VALUE_HIGH) ;
+
+    	GPIO_WriteDataBit(Q1_PORT, Q3_PIN, PIN_VALUE_LOW) ;
+    	/*****************************/
+
+    	uint8_t i=0 ;
+    	for(i=0 ; i<6 ; i++)
+    	{
+    		_7SEG_EnuShowNumber('0'+i) ;
+
+    		TRG_vTimDelay_MS(100) ;
+    	}
+
+
+    	TRG_vTimDelay_MS(500) ;
+
+
+    /*****************************/
+
+
+
+
+
+
+
+     TMRD0_vStart() ;
+     TRG_vTimDelay_MS(200) ;
+     TMRD0_vStop() ;
+
+
+    }
+return 0;
+
+}
+#endif
+
+
+
+
+
+#if 0
+
+#include "core/R5F11B/LIB/STD_TYPES.h"
+#include "core/R5F11B/iodefine.h"
+
+#include "core/R5F11B/CG/R5F11BBC_CG.h"
+#include "core/R5F11B/GPIO/R5F11BBC_GPIO.h"
+#include "core/R5F11B/TRG/R5F11BBC_TRG.h"
+#include "app/inc/bsp_R5F11BBC.h"
+
+#include "mcal/mcal.h"
+
+
+
+
+/***************************************************************************************************************/
+uint32_t DELAY_COUNTER = 0 ;
+#define DELAY_MS(REQ_DELAY) 	for(DELAY_COUNTER = 0 ; DELAY_COUNTER<(REQ_DELAY*1000UL) ; DELAY_COUNTER++ )	\
+									{asm("NOP") ; }
+/***************************************************************************************************************/
+
+
+
+
+
+
+
+
+int main(void)
+{
+	SYS_Clock_Init() ;
+
+	EI() ;
+
+	//GPIO_SetPinOutput(LED_STANDBY_PORT , LED_STANDBY_PIN ) ;
+	//GPIO_SetPinOutput(LED_RELAY_PORT , LED_RELAY_PIN ) ;
+	GPIO_SetPinOutput(PORT1 , PIN4 ) ;
+	GPIO_SetPinOutput(PORT6 , PIN3 ) ;
+
+	//GPIO_WriteDataBit(LED_STANDBY_PORT, LED_STANDBY_PIN, PIN_VALUE_HIGH)  ;
+	//GPIO_WriteDataBit(LED_RELAY_PORT, LED_RELAY_PIN, PIN_VALUE_HIGH)  ;
+	//GPIO_WriteDataBit(PORT6, PIN2, PIN_VALUE_HIGH)  ;
+	//GPIO_WriteDataBit(PORT6, PIN3, PIN_VALUE_HIGH)  ;
+	//DELAY_MS(1000)  ;
+
+
+
+	TRG_vTimerInit() ;
+	TRG_vIntSetControl(TRG_INT_ENABLE);
+	TRG_vSetRunState(TRG_RUN_START);
+
+
+    while (1)
+    {
+    }
+}
+
+
+
+
+#endif
+
+
+
+
+
+// Switches Test
+#if 0
+
+#include "core/R5F11B/LIB/STD_TYPES.h"
+#include "core/R5F11B/iodefine.h"
+
+#include "core/R5F11B/CG/R5F11BBC_CG.h"
+#include "core/R5F11B/GPIO/R5F11BBC_GPIO.h"
+#include "core/R5F11B/TRG/R5F11BBC_TRG.h"
+#include "app/inc/bsp_R5F11BBC.h"
+
+
+
+#include "gpio/gpio.h"
+#include "mcal/mcal.h"
+
+
+
+
+/***************************************************************************************************************/
+uint32_t DELAY_COUNTER = 0 ;
+#define DELAY_MS(REQ_DELAY) 	for(DELAY_COUNTER = 0 ; DELAY_COUNTER<(REQ_DELAY*1000UL) ; DELAY_COUNTER++ )	\
+									{asm("NOP") ; }
+/***************************************************************************************************************/
+
+
+
+
+
+uint8_t R1=1 ;
+uint8_t R2=1 ;
+uint8_t R3=1 ;
+
+
+gpio_t LED_ST = {LED_STANDBY_PORT , LED_STANDBY_PIN , GPIO_OUTPUT , GPIO_HIGH} ;
+gpio_t LED_RL = {LED_RELAY_PORT , LED_RELAY_PIN , GPIO_OUTPUT , GPIO_HIGH} ;
+
+gpio_t SW_CLK = {SW_PLUS_PORT , SW_PLUS_PIN , GPIO_INPUT , GPIO_HIGH} ;
+gpio_t SW_DATA = {SW_MINUS_PORT , SW_MINUS_PIN , GPIO_INPUT , GPIO_HIGH} ;
+gpio_t SW_INT = {SW_STANDBY_PORT , SW_STANDBY_PIN , GPIO_INPUT , GPIO_HIGH} ;
+
+
+
+
+int main(void)
+{
+	SYS_Clock_Init() ;
+
+	EI() ;
+
+	gpio_pin_init(&LED_ST);
+	gpio_pin_init(&LED_RL);
+	gpio_pin_init(&SW_CLK);
+	gpio_pin_init(&SW_DATA);
+	gpio_pin_init(&SW_INT);
+
+	gpio_pinIOState_set(SW_PLUS_PORT, SW_PLUS_PIN, GPIO_INPUT) ;
+	gpio_pinIOState_set(SW_MINUS_PORT, SW_MINUS_PIN, GPIO_INPUT) ;
+	gpio_pinIOState_set(SW_STANDBY_PORT, SW_STANDBY_PIN, GPIO_INPUT) ;
+
+	gpio_pinState_set(LED_STANDBY_PORT,LED_STANDBY_PIN, GPIO_LOW );
+	gpio_pinState_set(LED_RELAY_PORT,LED_RELAY_PIN, GPIO_LOW );
+
+	DELAY_MS(1000)  ;
+
+
+	void gpio_pin_init(gpio_t *px_gpio);
+	void gpio_pinState_set(gpio_port_t port, gpio_pin_t pin, gpio_state_t x_state);
+
+
+    while (1)
+    {
+    	R1 = gpio_pinState_get(SW_PLUS_PORT,SW_PLUS_PIN);
+    	R2 = gpio_pinState_get(SW_MINUS_PORT,SW_MINUS_PIN);
+    	R3 = gpio_pinState_get(SW_STANDBY_PORT,SW_STANDBY_PIN);
+
+
+    	if (!R1)
+    	{
+    		gpio_pinState_set(LED_STANDBY_PORT,LED_STANDBY_PIN, GPIO_HIGH );
+    		DELAY_MS(1) ;
+    		gpio_pinState_set(LED_RELAY_PORT,LED_RELAY_PIN, GPIO_LOW );
+
+    	}
+    	if (!R2)
+    	{
+    		gpio_pinState_set(LED_STANDBY_PORT,LED_STANDBY_PIN, GPIO_LOW );
+    		DELAY_MS(1) ;
+    		gpio_pinState_set(LED_RELAY_PORT,LED_RELAY_PIN, GPIO_HIGH );
+
+    	}
+    	if (!R3)
+    	{
+    		gpio_pinState_set(LED_STANDBY_PORT,LED_STANDBY_PIN, GPIO_LOW );
+    		DELAY_MS(1) ;
+    		gpio_pinState_set(LED_RELAY_PORT,LED_RELAY_PIN, GPIO_LOW );
+
+    	}
+
+    	DELAY_MS(1) ;
+		gpio_pinState_set(LED_STANDBY_PORT,LED_STANDBY_PIN, GPIO_HIGH );
+		DELAY_MS(1) ;
+		gpio_pinState_set(LED_RELAY_PORT,LED_RELAY_PIN, GPIO_HIGH );
+    	DELAY_MS(1) ;
+
+    	}
+
+
+}
+
+
+
+
+#endif
+
+
+
+
+
+
+
+
+
+
+// 7 SEG Test
+#if 0
+
+
+
+
+#include "core/R5F11B/LIB/STD_TYPES.h"
+#include "core/R5F11B/iodefine.h"
+
+#include "core/R5F11B/CG/R5F11BBC_CG.h"
+#include "core/R5F11B/GPIO/R5F11BBC_GPIO.h"
+#include "core/R5F11B/TRG/R5F11BBC_TRG.h"
+#include "app/inc/bsp_R5F11BBC.h"
+#include "_7Seg/_7SEG_Interface.h"
+
+
+#include "gpio/gpio.h"
+#include "mcal/mcal.h"
+
+
+
+/***************************************************************************************************************/
+uint32_t DELAY_COUNTER = 0 ;
+#define DELAY_MS(REQ_DELAY) 	for(DELAY_COUNTER = 0 ; DELAY_COUNTER<(REQ_DELAY*1000UL) ; DELAY_COUNTER++ )	\
+									{asm("NOP") ; }
+/***************************************************************************************************************/
+
+
+
+#define  Q1_PORT 	PORT7
+#define  Q1_PIN  	PIN0
+
+#define  Q2_PORT 	PORT7
+#define  Q2_PIN  	PIN2
+
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+	 TRG_vTimerInit() ;
+	 _7SEG_EnuInit() ;
+
+	 GPIO_SetPinOutput(Q1_PORT, Q1_PIN) ;
+	 GPIO_SetPinOutput(Q2_PORT, Q2_PIN) ;
+	 GPIO_WriteDataBit(Q1_PORT, Q1_PIN, PIN_VALUE_LOW) ;
+	 GPIO_WriteDataBit(Q2_PORT, Q2_PIN, PIN_VALUE_LOW) ;
+
+	 _7SEG_EnuInit() ;
+
+
+    while(1) {
+	// TODO: add application code here
+
+    	uint8_t _7Seg_Count = 0 ;
+
+
+
+    	for(_7Seg_Count = 0 ; _7Seg_Count <10 ; _7Seg_Count ++)
+    	{
+    		_7SEG_EnuShowNumber('0'+_7Seg_Count) ;
+
+
+    		DELAY_MS(500)  ;
+
+
+
+
+    	}
+
+    	for(_7Seg_Count = 0 ; _7Seg_Count <8 ; _7Seg_Count ++)
+    	  {
+    	   	_7SEG_EnuShowNumber('A'+_7Seg_Count) ;
+
+    	   	DELAY_MS(500)  ;
+
+    	 }
+
+
+	_7SEG_EnuShowNumber('\0') ;
+
+
+    }
+return 0;
+
+}
+#endif
+
+
+
+
+
+
+
+
+// ADC Test
+#if 0
+
+
+#include "core/R5F11B/LIB/STD_TYPES.h"
+#include "core/R5F11B/iodefine.h"
+
+#include "core/R5F11B/CG/R5F11BBC_CG.h"
+#include "core/R5F11B/GPIO/R5F11BBC_GPIO.h"
+#include "core/R5F11B/TRG/R5F11BBC_TRG.h"
+#include "core/R5F11B/ADC/R5F11BBC_ADC.h"
+#include "app/inc/bsp_R5F11BBC.h"
+#include "_7Seg/_7SEG_Interface.h"
+
+
+#include "driver/gpio/gpio.h"
+#include "driver/adc/adc.h"
+#include "mcal/mcal.h"
+
+
+/***************************************************************************************************************/
+uint32_t DELAY_COUNTER = 0 ;
+#define DELAY_MS(REQ_DELAY) 	for(DELAY_COUNTER = 0 ; DELAY_COUNTER<(REQ_DELAY*1000UL) ; DELAY_COUNTER++ )	\
+									{asm("NOP") ; }
+/***************************************************************************************************************/
+
+
+
+
+
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+
+	 _7SEG_EnuInit() ;
+
+	 GPIO_SetPinOutput(SSD_ONES_SELECT_PORT, SSD_ONES_SELECT_PIN) ;
+	 GPIO_SetPinOutput(SSD_TENS_SELECT_PORT, SSD_TENS_SELECT_PIN) ;
+
+	 GPIO_WriteDataBit(SSD_ONES_SELECT_PORT, SSD_ONES_SELECT_PIN, PIN_VALUE_LOW) ;
+	 GPIO_WriteDataBit(SSD_TENS_SELECT_PORT, SSD_TENS_SELECT_PIN, PIN_VALUE_LOW) ;
+
+	 _7SEG_EnuInit() ;
+
+	 _7SEG_EnuShowNumber('0') ;
+
+	 ADC_vInit(100)  ;
+
+	 GPIO_SetAnalogInput(SENSOR_FLANGE_PORT, SENSOR_FLANGE_PIN, GPIO_STATUS_ENABLE) ;
+	 GPIO_SetAnalogInput(SENSOR_DISPLAY_PORT, SENSOR_DISPLAY_PIN, GPIO_STATUS_ENABLE) ;
+
+
+	 ADC_vStatusControl(ADC_ON)  ;
+
+uint16_t reading = 0 ;
+
+    while(1) {
+	// TODO: add application code here
+
+    /********************************************/
+    	ADC_vChannelSelect(ADC_AIN18)  ;
+
+    	ADC_vStartConversion() ;
+
+    	reading = ADC_u16GetResult() ;
+    	reading = ( reading * 9 ) /255 ;
+
+    	ADC_vStopConversion() ;
+
+    	_7SEG_EnuShowNumber('0'+reading) ;
+
+    	DELAY_MS(1000)  ;
+
+
+    /********************************************/
+    	_7SEG_EnuShowNumber('\0') ;
+    		DELAY_MS(1000)  ;
+    /********************************************/
+    	ADC_vChannelSelect(ADC_AIN23)  ;
+
+    	ADC_vStartConversion() ;
+
+    	reading = ADC_u16GetResult() ;
+    	reading = ( reading * 9 ) /255 ;
+    	reading = 9 - reading ;
+
+    	ADC_vStopConversion() ;
+
+    	_7SEG_EnuShowNumber('0'+reading) ;
+
+    	DELAY_MS(1000)  ;
+
+
+    }
+return 0;
+
+}
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ADC Test
+#if 0
+
+
+#include "core/R5F11B/LIB/STD_TYPES.h"
+#include "core/R5F11B/iodefine.h"
+
+#include "core/R5F11B/CG/R5F11BBC_CG.h"
+#include "core/R5F11B/GPIO/R5F11BBC_GPIO.h"
+#include "core/R5F11B/TRG/R5F11BBC_TRG.h"
+#include "core/R5F11B/ADC/R5F11BBC_ADC.h"
+#include "app/inc/bsp_R5F11BBC.h"
+#include "_7Seg/_7SEG_Interface.h"
+
+
+#include "driver/gpio/gpio.h"
+#include "driver/adc/adc.h"
+#include "mcal/mcal.h"
+
+
+/***************************************************************************************************************/
+uint32_t DELAY_COUNTER = 0 ;
+#define DELAY_MS(REQ_DELAY) 	for(DELAY_COUNTER = 0 ; DELAY_COUNTER<(REQ_DELAY*1000UL) ; DELAY_COUNTER++ )	\
+									{asm("NOP") ; }
+/***************************************************************************************************************/
+
+
+
+
+
+
+int main(void) {
+
+	 SYS_Clock_Init() ;
+
+	 _7SEG_EnuInit() ;
+
+	 GPIO_SetPinOutput(SSD_ONES_SELECT_PORT, SSD_ONES_SELECT_PIN) ;
+	 GPIO_SetPinOutput(SSD_TENS_SELECT_PORT, SSD_TENS_SELECT_PIN) ;
+
+	 GPIO_WriteDataBit(SSD_ONES_SELECT_PORT, SSD_ONES_SELECT_PIN, PIN_VALUE_LOW) ;
+	 GPIO_WriteDataBit(SSD_TENS_SELECT_PORT, SSD_TENS_SELECT_PIN, PIN_VALUE_LOW) ;
+
+	 _7SEG_EnuInit() ;
+
+	 _7SEG_EnuShowNumber('7') ;
+
+
+
+	// GPIO_SetAnalogInput(SENSOR_FLANGE_PORT, SENSOR_FLANGE_PIN, GPIO_STATUS_ENABLE) ;
+	// GPIO_SetAnalogInput(SENSOR_DISPLAY_PORT, SENSOR_DISPLAY_PIN, GPIO_STATUS_ENABLE) ;
+
+
+	 ADC_vInit('\0')  ;
+
+	 ADC_vStatusControl(ADC_ON)  ;
+
+	 uint16_t reading = 0 ;
+
+    while(1) {
+	// TODO: add application code here
+
+//    /********************************************/
+//    	ADC_vChannelSelect(ADC_AIN18)  ;
+//
+//    	ADC_vStartConversion() ;
+//
+//    	DELAY_MS(10)  ;
+//
+//    	reading = ADC_u16GetResult() ;
+//    	reading = ( reading * 9 ) /255 ;
+//
+//    	ADC_vStopConversion() ;
+//
+//    	_7SEG_EnuShowNumber('0'+reading) ;
+//
+//    	DELAY_MS(1000)  ;
+//
+//
+//    /********************************************/
+//    	_7SEG_EnuShowNumber('\0') ;
+//    		DELAY_MS(1000)  ;
+//    /********************************************/
+//    	ADC_vChannelSelect(ADC_AIN23)  ;
+//
+//    	ADC_vStartConversion() ;
+//
+//    	DELAY_MS(10)  ;
+//
+//    	reading = ADC_u16GetResult() ;
+//    	reading = ( reading * 9 ) /255 ;
+//    	reading = 9 - reading ;
+//
+//    	ADC_vStopConversion() ;
+//
+//    	_7SEG_EnuShowNumber('0'+reading) ;
+//
+//    	DELAY_MS(1000)  ;
+//
+
+    }
+return 0;
+
+}
+#endif
